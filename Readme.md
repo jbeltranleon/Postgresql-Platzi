@@ -40,6 +40,9 @@
 
 __Service__ :arrow_lower_right: __Database__: Organización lógica de datos y código (posee una relación a archivos físicos en el directorio de archivos):arrow_lower_right: __Schema__: Organización lógica de datos y código (con el esquema podemos separar datos...)
 
+> UN __SERVICE__ PUEDE CONTENER UNA O MÁS __BASES DE DATOS__
+> | UNA __BASE DE DATOS__ PUEDE CONTENER UNO O MÁS __SCHEMAS__
+
 __Tablespace__: Es un archivo en donde se indica la distribución que va a tener la base de datos en por ejemplo: _un arreglo de discos_
 
 __Catalog__: En donde se encuentran las bases de datos que almacenan los metadatos de los esquemas, ejemplo: _¿cuantas tablas tengo creadas en el esquema?_
@@ -77,6 +80,3 @@ __Archivos de configuración__: Tener cuidado al editar las configuraciones :no_
     * SELECT pg_cancel_backend(proc id); --¿Cómo terminar la operación de una query?
     * SELECT pg_terminate_backend(proc id); --¿Cómo cerrar una session?
 *********************************************************
-
-> UN __SERVICE__ PUEDE CONTENER UNA O MÁS __BASES DE DATOS__
-> | UNA __BASE DE DATOS__ PUEDE CONTENER UNO O MÁS __SCHEMAS__
