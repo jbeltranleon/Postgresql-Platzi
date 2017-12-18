@@ -38,8 +38,7 @@
 * librerias y archivos físicos
 * Servicios :arrow_right: __Instancia:__ Responde a una dirección IP, tiene sus propios permisos de acceso y mantiene aislada su información, ejemplo: _instancia administrativa, instancia área de producción, que no tienen nada de relación una con la otra._
 
-__Service__
+__Service__ :arrow_lower_right: __Database__: Organización lógica de datos y código (posee una relación a archivos físicos en el directorio de archivos):arrow_lower_right: __Schema__: Organización lógica de datos y código (con el esquema podemos separar datos...)
 
-:arrow_double_down:
-
-__Database__
+> UN __SERVICE__ PUEDE CONTENER UNA O MÁS __BASES DE DATOS__
+> | UNA __BASE DE DATOS__ PUEDE CONTENER UNO O MÁS __SCHEMAS__
