@@ -11,3 +11,5 @@ You are now connected to database "jbeltranleon" as user "jbeltranleon".
 __jbeltranleon=#__ CREATE ROLE rol_usuario LOGIN PASSWORD 'pass123';
 
 CREATE ROLE
+
+__jbeltranleon=#__ SELECT * FROM pg_roles
