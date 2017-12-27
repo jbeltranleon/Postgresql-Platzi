@@ -13,3 +13,12 @@ __jbeltranleon=#__ CREATE ROLE rol_usuario LOGIN PASSWORD 'pass123';
 CREATE ROLE
 
 __jbeltranleon=#__ SELECT * FROM pg_roles
+
+__jbeltranleon=#__ DROP ROLE rol_usuario;
+
+DROP ROLE
+
+
+__jbeltranleon=#__ CREATE ROLE rol_usuario LOGIN ENCRYPTED  PASSWORD 'pass123';
+
+CREATE ROLE
