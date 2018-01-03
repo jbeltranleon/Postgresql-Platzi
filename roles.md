@@ -48,3 +48,32 @@ Podemos cambiar a otro rol usando SET
 __jbeltranleon=#__ SET ROLE usuario_infinito_crea_bd;
 
 SET
+
+
+> Podemos crear una base de datos y convertirla en una plantilla.
+
+__jbeltranleon=#__ \c jbeltranleon
+
+You are now connected to database "jbeltranleon" as user "jbeltranleon".
+
+__jbeltranleon=#__ CREATE DATABASE curso_pg;
+
+CREATE DATABASE
+
+__jbeltranleon=#__ DROP DATABASE curso_pg;
+
+ERROR:  database "curso_pg" is being accessed by other users
+DETAIL:  There is 1 other session using the database.
+
+__jbeltranleon=#__ DROP DATABASE curso_pg;
+
+DROP DATABASE
+
+__jbeltranleon=#__ CREATE DATABASE curso_pg TEMPLATE template1;
+CREATE DATABASE
+
+__jbeltranleon=#__ UPDATE pg_database SET datistemplate = true WHERE datname = 'curso_pg;
+
+__jbeltranleon=#__ CREATE SCHEMA contabilidad;
+
+CREATE SCHEMA
