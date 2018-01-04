@@ -77,3 +77,71 @@ __jbeltranleon=#__ UPDATE pg_database SET datistemplate = true WHERE datname = '
 __jbeltranleon=#__ CREATE SCHEMA contabilidad;
 
 CREATE SCHEMA
+
+curso_pg=# CREATE ROLE other_user LOGIN ENCRYPTED PASSWORD 'pass123' CREATEDB VALID UNTIL 'infinity';
+
+CREATE ROLE
+
+curso_pg=# GRANT ALL ON ALL TABLES IN SCHEMA contabilidad TO other_user;
+
+GRANT
+
+__jbeltranleon=#__ CREATE SEQUENCE secuencia_ejemplo;
+
+CREATE SEQUENCE
+
+__jbeltranleon=#__ SELECT nextval('secuencia_ejemplo');
+
+ nextval
+---------
+       1
+(1 row)
+
+__jbeltranleon=#__ SELECT currval('secuencia_ejemplo');
+
+ currval
+---------
+       1
+(1 row)
+
+__jbeltranleon=#__ SELECT nextval('secuencia_ejemplo');
+
+ nextval
+---------
+       2
+(1 row)
+
+__jbeltranleon=#__ SELECT setval('secuencia_ejemplo', 1);
+
+ setval
+--------
+      1
+(1 row)
+
+__jbeltranleon=#__ SELECT currval('secuencia_ejemplo');
+
+ currval
+---------
+       1
+(1 row)
+
+__jbeltranleon=#__ SELECT nextval('secuencia_ejemplo');
+
+ nextval
+---------
+       2
+(1 row)
+
+__jbeltranleon=#__ SELECT lpad('ab', 3, '0') AS pad, repeat('-', 4) || 'zy' AS dash, trim('    tr    ') AS trim;
+
+ pad |  dash  | trim
+-----+--------+------
+ 0ab | ----zy | tr
+(1 row)
+
+__jbeltranleon=#__ SELECT split_part('324-472-8899', '-', 2) AS x;
+
+  x  
+-----
+ 472
+(1 row)
