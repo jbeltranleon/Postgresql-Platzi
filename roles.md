@@ -282,9 +282,191 @@ __curso_pg=#__ INSERT INTO profiles_binary(profile) VALUES (
 INSERT 0 1
 
 __curso_pg=#__ SELECT * FROM profiles_binary;
-                             
+
  id |                             profile                             
 ----+-----------------------------------------------------------------
   1 | {"name": "Fredy", "tech": ["bash", "django"]}
   2 | {"name": "Jhon", "tech": ["postgresql", "python", "wordpress"]}
+(2 rows)
+
+__curso_pg=#__ SELECT p.id, string_to_array(string_agg(elem, ', '), ', ') AS list
+FROM profiles p,
+json_array_elements_text(p.profile->'tech') elem
+GROUP BY 1;
+
+ id |             list              
+----+-------------------------------
+  1 | {postgresql,python,wordpress}
+  2 | {bash,django}
+(2 rows)
+
+
+__curso_pg=#__ SELECT id, profile->>'name' FROM profiles;
+
+ id | ?column?
+----+----------
+  1 | Jhon
+  2 | Fredy
+(2 rows)
+
+__curso_pg=#__ SELECT * FROM profiles p WHERE p.profile->>'name' = 'Jhon';
+
+ id |                            profile                             
+----+----------------------------------------------------------------
+  1 | {"name":"Jhon", "tech": ["postgresql", "python", "wordpress"]}
+(1 row)
+
+__curso_pg=#__ CREATE TABLE data(id SERIAL PRIMARY KEY, gender VARCHAR(6) NOT NULL, height NUMERIC NOT NULL, weight NUMERIC NOT NULL);
+
+CREATE TABLE
+
+__curso_pg=#__ INSERT INTO data(gender, height, weight) VALUES ('Male', 73.85, 1.80), ('Male', 64.3, 1.78), ('Female', 58.0, 1.59);
+
+INSERT 0 3
+
+__curso_pg=#__ SELECT * FROM data;
+
+ id | gender | height | weight
+----+--------+--------+--------
+  1 | Male   |  73.85 |   1.80
+  2 | Male   |   64.3 |   1.78
+  3 | Female |   58.0 |   1.59
+(3 rows)
+
+__curso_pg=#__ SELECT row_to_json(data) FROM data;
+
+                      row_to_json                       
+--------------------------------------------------------
+ {"id":1,"gender":"Male","height":73.85,"weight":1.80}
+ {"id":2,"gender":"Male","height":64.3,"weight":1.78}
+ {"id":3,"gender":"Female","height":58.0,"weight":1.59}
+(3 rows)
+
+__curso_pg=#__ SELECT row_to_json(row(gender, weight)) FROM data;
+
+        row_to_json        
+---------------------------
+ {"f1":"Male","f2":1.80}
+ {"f1":"Male","f2":1.78}
+ {"f1":"Female","f2":1.59}
+(3 rows)
+
+__curso_pg=#__ SELECT row_to_json(t) FROM (SELECT id, gender, height FROM data LIMIT 1) t;
+
+               row_to_json               
+-----------------------------------------
+ {"id":1,"gender":"Male","height":73.85}
+(1 row)
+
+__curso_pg=#__ SELECT row_to_json(t) FROM (SELECT id AS identificador, gender AS genero, height AS altura FROM data LIMIT 1) t;
+
+                    row_to_json                     
+----------------------------------------------------
+ {"identificador":1,"genero":"Male","altura":73.85}
+(1 row)
+
+__curso_pg=#__ SELECT array_to_json(array_agg(row_to_json(t)))
+__curso_pg-#__ FROM
+__curso_pg-#__ (
+__curso_pg(#__ SELECT gender, height FROM data) t;
+
+array_to_json                                             
+------------------------------------------------------------------------------------------------------
+[{"gender":"Male","height":73.85},{"gender":"Male","height":64.3},{"gender":"Female","height":58.0}]
+(1 row)
+
+__curso_pg=#__ CREATE EXTENSION hstore;
+
+CREATE EXTENSION
+
+__curso_pg=#__ CREATE TABLE hprofiles(id SERIAL PRIMARY KEY, profile HSTORE);
+
+CREATE TABLE
+
+__curso_pg=#__ \d hprofiles
+
+                          Table "public.hprofiles"
+ Column  |  Type   |                       Modifiers                        
+---------+---------+--------------------------------------------------------
+ id      | integer | not null default nextval('hprofiles_id_seq'::regclass)
+ profile | hstore  |
+Indexes:
+    "hprofiles_pkey" PRIMARY KEY, btree (id)
+
+__curso_pg=#__ INSERT INTO hprofiles(profile) VALUES('name=>Mario, ruby=>true, postgresql=>true');
+
+INSERT 0 1
+
+__curso_pg=#__ SELECT * FROM hprofiles;
+
+ id |                        profile                        
+----+-------------------------------------------------------
+  1 | "name"=>"Mario", "ruby"=>"true", "postgresql"=>"true"
+(1 row)
+
+__curso_pg=#__ INSERT INTO hprofiles(profile) VALUES('name=>Jorge, javascript=>true, nodejs=>true');
+
+INSERT 0 1
+
+__curso_pg=#__ SELECT * FROM hprofiles;
+
+ id |                         profile                         
+----+---------------------------------------------------------
+  1 | "name"=>"Mario", "ruby"=>"true", "postgresql"=>"true"
+  2 | "name"=>"Jorge", "nodejs"=>"true", "javascript"=>"true"
+(2 rows)
+
+__curso_pg=#__ SELECT * FROM hprofiles WHERE (profile->'ruby')::boolean;
+
+ id |                        profile                        
+----+-------------------------------------------------------
+  1 | "name"=>"Mario", "ruby"=>"true", "postgresql"=>"true"
+(1 row)
+
+__curso_pg=#__ SELECT * FROM hprofiles WHERE (profile->'ruby')::boolean=true;
+
+ id |                        profile                        
+----+-------------------------------------------------------
+  1 | "name"=>"Mario", "ruby"=>"true", "postgresql"=>"true"
+(1 row)
+
+__curso_pg=#__ SELECT * FROM hprofiles WHERE (profile->'ruby')::boolean=false;
+
+ id | profile
+----+---------
+(0 rows)
+
+__curso_pg=#__ SELECT * FROM hprofiles WHERE profile @> 'nodejs=>true';
+
+ id |                         profile                         
+----+---------------------------------------------------------
+  2 | "name"=>"Jorge", "nodejs"=>"true", "javascript"=>"true"
+(1 row)
+
+__curso_pg=#__ SELECT * FROM hprofiles WHERE profile ? 'postgresql';
+
+ id |                        profile                        
+----+-------------------------------------------------------
+  1 | "name"=>"Mario", "ruby"=>"true", "postgresql"=>"true"
+(1 row)
+
+__curso_pg=#__ SELECT * FROM hprofiles WHERE profile ?& ARRAY['ruby', 'javascript'];
+
+ id | profile
+----+---------
+(0 rows)
+
+__curso_pg=#__ SELECT * FROM hprofiles WHERE profile ?& ARRAY['ruby', 'postgresql'];
+
+ id |                        profile                        
+----+-------------------------------------------------------
+  1 | "name"=>"Mario", "ruby"=>"true", "postgresql"=>"true"
+(1 row)
+
+__curso_pg=#__ SELECT * FROM hprofiles WHERE profile ?| ARRAY['ruby', 'javascript'];
+ 
+ id |                         profile                         
+----+---------------------------------------------------------
+  1 | "name"=>"Mario", "ruby"=>"true", "postgresql"=>"true"
+  2 | "name"=>"Jorge", "nodejs"=>"true", "javascript"=>"true"
 (2 rows)
