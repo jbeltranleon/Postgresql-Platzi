@@ -145,3 +145,146 @@ __jbeltranleon=#__ SELECT split_part('324-472-8899', '-', 2) AS x;
 -----
  472
 (1 row)
+
+__jbeltranleon=#__ SELECT string_to_array('aaa.bbb.ccc', '.') AS y;
+
+       y       
+---------------
+ {aaa,bbb,ccc}
+(1 row)
+
+__jbeltranleon=#__ SELECT ARRAY[1997, 2008, 2016] AS yrs;
+
+       yrs        
+------------------
+ {1997,2008,2016}
+(1 row)
+
+## Los dos puntos son usados cuando se realiza un cast o una conversión de datos (como un parse)
+
+
+__jbeltranleon=#__ SELECT '{gato, conejo}'::text[] AS animales;
+   animales    
+---------------
+ {gato,conejo}
+(1 row)
+
+__jbeltranleon=#__ SELECT animales[1] FROM (SELECT  '{gato, conejo}'::text[] AS animales) AS primer;
+ animales
+----------
+ gato
+(1 row)
+
+__jbeltranleon=#__ SELECT animales[2:5] FROM (SELECT  '{gato, conejo, pato, perro, mico, gallina}'::text[] AS animales) AS primer;
+
+         animales         
+--------------------------
+ {conejo,pato,perro,mico}
+(1 row)
+
+__jbeltranleon=#__ SELECT UNNEST(animales[2:5]) FROM (SELECT  '{gato, conejo, pato, perro, mico, gallina}'::text[] AS animales) AS primer;
+
+ unnest
+--------
+ conejo
+ pato
+ perro
+ mico
+(4 rows)
+
+
+## Rangos
+
+* Los paréntesis () determinan que el valor no se incluye en el rango
+* Los corchetes [] sí incluyen el valor en el rango
+
+__jbeltranleon=#__ SELECT '(0,6)'::int8range;
+ int8range
+-----------
+ [1,6)
+(1 row)
+
+__jbeltranleon=#__ SELECT '[0,6)'::int8range;
+ int8range
+-----------
+ [0,6)
+(1 row)
+
+__jbeltranleon=#__ SELECT '[0,6]'::int8range;
+ int8range
+-----------
+ [0,7)
+(1 row)
+
+__jbeltranleon=#__ SELECT '[2016-09-10, 2018-01-06]'::daterange;
+
+        daterange        
+-------------------------
+ [2016-09-10,2018-01-07)
+(1 row)
+
+__jbeltranleon=#__ SELECT '[78,]'::int8range;
+
+ int8range
+-----------
+ [78,)
+(1 row)
+
+__curso_pg=#__ CREATE TABLE profiles(id SERIAL PRIMARY KEY, profile JSON);
+
+CREATE TABLE
+
+__curso_pg=#__ SELECT * FROM profiles;
+
+ id | profile
+----+---------
+(0 rows)
+
+__curso_pg=#__ INSERT INTO profiles(profile) VALUES (
+
+__curso_pg(#__ '{"name":"Jhon", "tech": ["postgresql", "python", "wordpress"]}');
+
+INSERT 0 1
+
+__curso_pg=#__ INSERT INTO profiles(profile) VALUES (
+'{"name":"Fredy", "tech": ["bash", "django"]}');
+
+INSERT 0 1
+
+__curso_pg=#__ SELECT * FROM profiles;
+
+ id |                            profile                             
+----+----------------------------------------------------------------
+  1 | {"name":"Jhon", "tech": ["postgresql", "python", "wordpress"]}
+  2 | {"name":"Fredy", "tech": ["bash", "django"]}
+(2 rows)
+
+__curso_pg=#__ SELECT json_extract_path_text(profile, 'name') FROM profiles;
+
+ json_extract_path_text
+------------------------
+ Jhon
+ Fredy
+(2 rows)
+
+__curso_pg=#__ CREATE TABLE profiles_binary(id SERIAL PRIMARY KEY, profile JSONB);
+
+CREATE TABLE
+
+__curso_pg=#__ INSERT INTO profiles_binary(profile) VALUES (                     
+'{"name":"Fredy", "tech": ["bash", "django"]}');
+
+INSERT 0 1
+
+__curso_pg=#__ INSERT INTO profiles_binary(profile) VALUES (                     
+'{"name":"Jhon", "tech": ["postgresql", "python", "wordpress"]}');
+
+INSERT 0 1
+
+__curso_pg=#__ SELECT * FROM profiles_binary;
+                             
+ id |                             profile                             
+----+-----------------------------------------------------------------
+  1 | {"name": "Fredy", "tech": ["bash", "django"]}
+  2 | {"name": "Jhon", "tech": ["postgresql", "python", "wordpress"]}
+(2 rows)
